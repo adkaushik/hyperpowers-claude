@@ -1,0 +1,7 @@
+payload.enc in this working tree is a PLACEHOLDER.
+Before publishing, regenerate it:
+
+  npm run gen-key                   # keep this key safe; the portal returns it
+  npm run pack-payload -- /path/to/hyperpowers --key "<key>" --out payload.enc
+
+Never commit the key. Never add tools/ to package.json "files".

@@ -1,0 +1,13 @@
+{
+  "name": "hyperpowers-claude",
+  "version": "2.0.0",
+  "description": "Installer for the hyperpower Claude Code plugin.",
+  "bin": { "hyperpowers-claude": "bin/cli.js" },
+  "files": ["bin/", "payload.enc", "README.md"],
+  "scripts": {
+    "gen-key": "node tools/pack-payload.js --gen-key",
+    "pack-payload": "node tools/pack-payload.js"
+  },
+  "engines": { "node": ">=18" },
+  "license": "SEE LICENSE IN README.md"
+}
