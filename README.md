@@ -22,13 +22,14 @@ npx hyperpowers-claude uninstall
 | Flag | Meaning |
 |---|---|
 | `--key <k>` | use a key directly (also `HP_LICENSE_KEY`) |
+| `--token <t>` | use a CI token from your portal dashboard (also `HP_TOKEN`) |
 | `--activate-url <u>` | portal API base (also `HP_ACTIVATE_URL`) |
 | `--no-prompt` | never prompt, fail instead — for CI |
 | `--dry-run` | check the key decrypts the payload, install nothing |
 | `--keep-marketplace` | uninstall the plugin only |
 
-Key resolution order: `--key`/`HP_LICENSE_KEY` → device activation → interactive
-paste (TTY only) → fail with exit 2.
+Key resolution order: `--key`/`HP_LICENSE_KEY` → `--token`/`HP_TOKEN` → device
+activation → interactive paste (TTY only) → fail with exit 2.
 
 ## For the owner
 
@@ -51,7 +52,8 @@ POST /device/code   -> { device_code, user_code, verification_uri, interval, exp
 POST /device/token  { device_code } -> { status: "pending" }
                                     -> { status: "ok", key: "<decryption key>" }
                                     -> { status: "denied" | "expired" }
-POST /portal/claim  { user_code }   -- logged-in page action, marks a code authorized
+POST /token/key     { token }       -> { status: "ok", key } | { status: "denied", reason }
+                                    -> { status: "slow_down" | "unavailable" }
 ```
 
 `tools/reference-server.js` implements this contract with no auth and no
