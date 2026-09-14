@@ -9,14 +9,14 @@ npx hyperpowers-claude
 ```
 
 The installer prints a link and a short code. Open
-https://hyperpowers-web.fly.dev/activate, sign in with GitHub, and enter the code.
+https://hyperpowers.dev/activate, sign in with GitHub, and enter the code.
 The install finishes on its own. Restart Claude Code and run `/hyperpower:help`.
 
 You need Claude Code and Node.js 18 or newer.
 
 ## Install on CI or a server
 
-Create a token on your dashboard at https://hyperpowers-web.fly.dev/dashboard, then
+Create a token on your dashboard at https://hyperpowers.dev/dashboard, then
 run:
 
 ```bash
