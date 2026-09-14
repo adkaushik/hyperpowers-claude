@@ -20,7 +20,7 @@ const DEFAULT_PAYLOAD_URL = '';  // only for a fetched payload (Option A); unuse
 const MARKETPLACE = 'hyperpowers';
 const PLUGIN = 'hyperpower';
 const SRC_DIR = path.join(os.homedir(), '.claude', 'hyperpowers-src');
-const VALUE_FLAGS = new Set(['--key', '--activate-url', '--payload-url', '--payload', '--dir']);
+const VALUE_FLAGS = new Set(['--key', '--token', '--activate-url', '--payload-url', '--payload', '--dir']);
 
 function parseArgs(argv) {
   const flags = {};
@@ -92,6 +92,19 @@ async function deviceFlow(base) {
   throw new Error('Timed out waiting for activation.');
 }
 
+async function tokenKey(base, token) {
+  const r = await postJSON(`${base.replace(/\/$/, '')}/token/key`, { token });
+  if (r.status === 'ok' && typeof r.key === 'string') return r.key;
+  const reason = r.status === 'slow_down'
+    ? 'Too many token requests. Wait 15 minutes, then try again.'
+    : r.status === 'unavailable'
+      ? 'Activation is not available yet.'
+      : r.reason || 'That token was refused.';
+  const err = new Error(reason);
+  err.exitCode = 2;
+  throw err;
+}
+
 function prompt(question) {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   return new Promise((r) => rl.question(question, (a) => { rl.close(); r(a); }));
@@ -103,6 +116,17 @@ async function resolveKey(flags) {
 
   const base = (typeof flags['activate-url'] === 'string' && flags['activate-url'])
     || process.env.HP_ACTIVATE_URL || DEFAULT_ACTIVATE_URL;
+
+  const token = (typeof flags.token === 'string' && flags.token) || process.env.HP_TOKEN;
+  if (token) {
+    if (!base) {
+      const err = new Error('--token needs an activation URL. Pass --activate-url or set HP_ACTIVATE_URL.');
+      err.exitCode = 2;
+      throw err;
+    }
+    return tokenKey(base, token.trim());
+  }
+
   if (base) return deviceFlow(base);
 
   if (process.stdin.isTTY && !flags['no-prompt']) {
@@ -110,7 +134,7 @@ async function resolveKey(flags) {
     if (k.trim()) return k.trim();
   }
 
-  const err = new Error('No key available. Pass --key, set HP_LICENSE_KEY, or configure --activate-url.');
+  const err = new Error('No key available. Pass --key or --token, set HP_LICENSE_KEY or HP_TOKEN, or configure --activate-url.');
   err.exitCode = 2;
   throw err;
 }
@@ -204,6 +228,7 @@ hyperpowers-claude — install the hyperpower Claude Code plugin
 
 Options
   --key <k>            use this key directly (or set HP_LICENSE_KEY)
+  --token <t>          use a CI token from your dashboard (or set HP_TOKEN)
   --activate-url <u>   portal API base for device activation (or HP_ACTIVATE_URL)
   --no-prompt          never prompt; fail instead (for CI)
   --dry-run            verify the key decrypts the payload, install nothing
