@@ -1,6 +1,6 @@
 # hyperpowers-claude
 
-Installs the hyperpower plugin for Claude Code.
+Installs the hyperpowers plugin for Claude Code.
 
 ## Install
 
@@ -10,7 +10,8 @@ npx hyperpowers-claude
 
 The installer prints a link and a short code. Open
 https://hyperpowers.dev/activate, sign in with GitHub, and enter the code.
-The install finishes on its own. Restart Claude Code and run `/hyperpower:help`.
+The install finishes on its own. Restart Claude Code, open your project and run
+`/hyperpower:build` with what you want built.
 
 You need Claude Code and Node.js 18 or newer.
 
