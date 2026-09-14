@@ -1,60 +1,46 @@
 # hyperpowers-claude
 
-Installer for the **hyperpower** Claude Code plugin.
+Installs the hyperpower plugin for Claude Code.
+
+## Install
 
 ```bash
 npx hyperpowers-claude
 ```
 
-It shows a one-time activation code. Open the portal link, sign in, enter the
-code, and the install continues on its own: the bundled payload is decrypted to
-`~/.claude/hyperpowers-src`, registered as a local marketplace, and the plugin
-is installed. Restart Claude Code, then try `/hyperpower:help`.
+The installer prints a link and a short code. Open
+https://hyperpowers-web.fly.dev/activate, sign in with GitHub, and enter the code.
+The install finishes on its own. Restart Claude Code and run `/hyperpower:help`.
 
-Remove everything:
+You need Claude Code and Node.js 18 or newer.
+
+## Install on CI or a server
+
+Create a token on your dashboard at https://hyperpowers-web.fly.dev/dashboard, then
+run:
+
+```bash
+npx hyperpowers-claude --token <your-token>
+```
+
+You can set `HP_TOKEN` instead of passing `--token`. Keep the token secret. Creating
+a new token replaces the old one.
+
+## Uninstall
 
 ```bash
 npx hyperpowers-claude uninstall
 ```
 
-## Options
+This removes the plugin, its marketplace entry and the files in
+`~/.claude/hyperpowers-src`. Add `--keep-marketplace` to leave the marketplace entry
+in place.
 
-| Flag | Meaning |
+## Exit codes
+
+| Code | Meaning |
 |---|---|
-| `--key <k>` | use a key directly (also `HP_LICENSE_KEY`) |
-| `--token <t>` | use a CI token from your portal dashboard (also `HP_TOKEN`) |
-| `--activate-url <u>` | portal API base (also `HP_ACTIVATE_URL`) |
-| `--no-prompt` | never prompt, fail instead — for CI |
-| `--dry-run` | check the key decrypts the payload, install nothing |
-| `--keep-marketplace` | uninstall the plugin only |
-
-Key resolution order: `--key`/`HP_LICENSE_KEY` → `--token`/`HP_TOKEN` → device
-activation → interactive paste (TTY only) → fail with exit 2.
-
-## For the owner
-
-`tools/` is not published (`package.json` `files` covers `bin/`, `payload.enc`,
-`README.md` only — verify with `npm pack --dry-run`).
-
-```bash
-npm run gen-key
-npm run pack-payload -- /path/to/hyperpowers --key "<key>" --out payload.enc
-# set DEFAULT_ACTIVATE_URL in bin/cli.js
-npm version patch && npm publish
-```
-
-The portal's `/device/token` must return that same key.
-
-### Portal contract
-
-```
-POST /device/code   -> { device_code, user_code, verification_uri, interval, expires_in }
-POST /device/token  { device_code } -> { status: "pending" }
-                                    -> { status: "ok", key: "<decryption key>" }
-                                    -> { status: "denied" | "expired" }
-POST /token/key     { token }       -> { status: "ok", key } | { status: "denied", reason }
-                                    -> { status: "slow_down" | "unavailable" }
-```
-
-`tools/reference-server.js` implements this contract with no auth and no
-entitlement check. It is a test stand-in, not a production portal.
+| `2` | The install was not activated, or the token was refused |
+| `3` | `claude` is not on your PATH |
+| `4` | The plugin files could not be unpacked |
+| `1` | Anything else |
