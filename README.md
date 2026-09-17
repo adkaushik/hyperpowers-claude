@@ -8,8 +8,8 @@ Installs the hyperpowers plugin for Claude Code.
 npx hyperpowers-claude
 ```
 
-The installer prints a link and a short code. Open
-https://hyperpowers.dev/activate, sign in with GitHub, and enter the code.
+The installer prints a link with your code in it. Open it, sign in with GitHub,
+and confirm the code matches your terminal.
 The install finishes on its own. Restart Claude Code, open your project and run
 `/hyperpower:build` with what you want built.
 
