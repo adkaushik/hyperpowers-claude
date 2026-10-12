@@ -1,6 +1,6 @@
 {
   "name": "hyperpowers-claude",
-  "version": "2.0.15",
+  "version": "2.0.17",
   "description": "Installer for the hyperpowers plugin for Claude Code.",
   "homepage": "https://hyperpowers.dev",
   "bin": {
